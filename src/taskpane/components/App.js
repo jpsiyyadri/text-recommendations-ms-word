@@ -5,8 +5,15 @@ import Header from "./Header";
 // import HeroList from "./HeroList";
 import Progress from "./Progress";
 import ItemsList from "./ItemsList";
+const { Configuration, OpenAIApi } = require("openai");
+/* global require, Word */
 
-/* global require, fetch */
+
+const configuration = new Configuration({
+  apiKey: "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",
+});
+
+const openai = new OpenAIApi(configuration);
 
 export default class App extends React.Component {
   constructor(props, context) {
@@ -23,15 +30,37 @@ export default class App extends React.Component {
 
   click = async () => {
     /* providing token in bearer */
-    const response = await fetch("https://jsonplaceholder.typicode.com/users");
-    const jsonResponse = await response.json();
+    // const response = await fetch("https://jsonplaceholder.typicode.com/users");
+    // const jsonResponse = await response.json();
+    return Word.run(async (context) => {
+      const paragraphs = context.document.getSelection().paragraphs;
+      paragraphs.load();
+      await context.sync();
+      var doc_text = paragraphs.items[0].text || "";
+      var op_data = [];
 
-    this.setState({
-      items: jsonResponse,
-      isClicked: "yes",
+      if (doc_text.length > 0) {
+        const response_2 = await openai.createCompletion({
+          model: "text-davinci-002",
+          prompt: doc_text,
+          temperature: 0,
+          max_tokens: 6,
+        });
+        // const jsonResponse = await response_2.json();
+        var { choices } = { ...response_2.data };
+        op_data = choices.filter((d) => d.text != "");
+      } else {
+        op_data = [];
+      }
+
+      this.setState({
+        items: op_data,
+        // items: jsonResponse,
+        isClicked: "yes",
+      });
+      // return React.createElement('h1', null, JSON.stringify(jsonResponse))
+      this.render();
     });
-    // return React.createElement('h1', null, JSON.stringify(jsonResponse))
-    this.render();
   };
 
   render() {

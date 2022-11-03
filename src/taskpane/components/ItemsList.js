@@ -7,9 +7,23 @@ export default class ItemsList extends React.Component {
   render() {
     const { children, suggestions, clicked } = this.props;
 
+    // const listItems = suggestions.map(function (suggestion) {
+    //   var suggestion_text = suggestion.text.replaceAll("\n", " ");
+    //   return (
+    //     <div data-val={suggestion_text} onClick={this.click} style={{ cursor: "pointer" }} className="suggestion-item">
+    //       {suggestion_text}
+    //     </div>
+    //   );
+    // });
+
     const listItems = suggestions.map((suggestion) => (
-      <div data-val={suggestion.name} onClick={this.click} style={{ cursor: "pointer" }} className="suggestion-item">
-        {suggestion.name}
+      <div
+        data-val={suggestion.text.replaceAll("\n", " ")}
+        onClick={this.click}
+        style={{ cursor: "pointer" }}
+        className="suggestion-item"
+      >
+        {suggestion.text.replaceAll("\n", " ")}
       </div>
     ));
     if (clicked == "no") {
@@ -32,8 +46,8 @@ export default class ItemsList extends React.Component {
     );
   }
 
-  click = e => {
-    const clicked_text = " "+e.target.dataset.val;
+  click = (e) => {
+    const clicked_text = " " + e.target.dataset.val;
     return Word.run(async (context) => {
       /**
        * Insert your Word code here
