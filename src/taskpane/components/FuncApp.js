@@ -11,31 +11,35 @@ import { useState, useEffect } from "react";
 export default function App({ title, isOfficeInitialized }) {
   const configuration = new Configuration({
     // eslint-disable-next-line no-undef
-    apiKey: "",
+    apiKey: "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",
   });
   const model_names = {
     "text-davinci-002": "text-davinci-002",
     "text-curie-001": "text-curie-001",
   };
   const openai = new OpenAIApi(configuration);
-  const [choices, setChoices] = useState([{ text: "hi" }, { text: "by" }, { text: "cu" }]);
+  const [choices, setChoices] = useState([
+    { text: "hi" },
+    { text: "the petrol prices are up due to" },
+    { text: "post covid affects on diabetes patient" },
+  ]);
   const [model, setModel] = useState("text-davinci-002");
 
   useEffect(() => {
     // Word.addEventListener("keydown", detectKeydown, true);
     // Word.Document.addEventListener("keydown", detectKeydown, true);
     // Word.Body.addEventListener("keydown", detectKeydown, true);
-    return Word.run(async (context) => {
-      context.addEventListener("keydown", detectKeydown, true);
-    });
+    // return Word.run(async (context) => {
+    //   context.addEventListener("keydown", detectKeydown, true);
+    // });
   });
 
-  const detectKeydown = (e) => {
-    setChoices([]);
-    if (e.key == "Tab") {
-      click();
-    }
-  };
+  //   const detectKeydown = (e) => {
+  //     setChoices([]);
+  //     if (e.key == "Tab") {
+  //       click();
+  //     }
+  //   };
 
   const click = async () => {
     return Word.run(async (context) => {
@@ -54,7 +58,7 @@ export default function App({ title, isOfficeInitialized }) {
       choices = choices.filter((d) => d.text != "");
       choices.forEach((item) => {
         item.text = item.text.replaceAll("\n", " ");
-      })
+      });
       setChoices(choices);
       await context.sync();
     });
@@ -100,7 +104,9 @@ export default function App({ title, isOfficeInitialized }) {
         {/* <Select options={["text-davinci-002", "text-curie-001"]} onChange={(values) => update_dropdown(values)} /> */}
       </div>
       <div className="align-items-center">
-        <button className="btn" onClick={click}>Click</button>
+        <button className="btn" onClick={click}>
+          Generate Suggestions
+        </button>
       </div>
       <div>
         <Suggestions items={choices} onClick={write}></Suggestions>
