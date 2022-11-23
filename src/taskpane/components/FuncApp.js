@@ -11,7 +11,7 @@ import { useState, useEffect } from "react";
 export default function App({ title, isOfficeInitialized }) {
   const configuration = new Configuration({
     // eslint-disable-next-line no-undef
-    apiKey: "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",
+    apiKey: "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",
   });
   const model_names = {
     "text-davinci-002": "text-davinci-002",
@@ -24,22 +24,30 @@ export default function App({ title, isOfficeInitialized }) {
     { text: "post covid affects on diabetes patient" },
   ]);
   const [model, setModel] = useState("text-davinci-002");
+  const [doctext, setDoctext] = useState("");
+  const [seconds, setSeconds] = useState(0);
 
   useEffect(() => {
-    // Word.addEventListener("keydown", detectKeydown, true);
-    // Word.Document.addEventListener("keydown", detectKeydown, true);
-    // Word.Body.addEventListener("keydown", detectKeydown, true);
-    // return Word.run(async (context) => {
-    //   context.addEventListener("keydown", detectKeydown, true);
-    // });
-  });
+    // eslint-disable-next-line no-undef
+    // Word.Document.body.addEventListener("keydown", detectKeydown, true);
+    // eslint-disable-next-line no-undef
+    const interval = setInterval(() => {
+      setSeconds((seconds) => seconds + 1);
+      if (choices.length == 0) {
+        setSeconds(0);
+        click();
+      }
+    }, 1000);
+    // eslint-disable-next-line no-undef
+    return () => clearInterval(interval);
+  }, [seconds]);
 
-  //   const detectKeydown = (e) => {
-  //     setChoices([]);
-  //     if (e.key == "Tab") {
-  //       click();
-  //     }
-  //   };
+  // const detectKeydown = (e) => {
+  //   setChoices([]);
+  //   if (e.key == "Tab") {
+  //     click();
+  //   }
+  // };
 
   const click = async () => {
     return Word.run(async (context) => {
@@ -74,9 +82,11 @@ export default function App({ title, isOfficeInitialized }) {
     const clicked_text = " " + choices[idx].text;
     return Word.run(async (context) => {
       const paragraphs = context.document.getSelection().paragraphs;
+      // context.document.body.addEventListener("keydown", detectKeydown, true);
       paragraphs.load();
       await context.sync();
       paragraphs.items[0].insertText(clicked_text, Word.InsertLocation.end);
+      setDoctext(paragraphs.items[0].text);
       setChoices([]);
       await context.sync();
     });
@@ -94,6 +104,9 @@ export default function App({ title, isOfficeInitialized }) {
 
   return (
     <div className="ms-welcome">
+      <header className="App-header">
+        {seconds} seconds choices: {choices.length}
+      </header>
       <div>
         <Dropdown
           options={["text-davinci-002", "text-curie-001"]}
